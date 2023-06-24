@@ -171,4 +171,25 @@ DELIMITER ;
 CALL get_game_purchases(1, @purchase_count);
 SELECT @purchase_count;
 
+-- Inizia la transazione
+START TRANSACTION;
+
+-- Inserisci un nuovo record nella tabella acquisti
+INSERT INTO acquisti (id_utente, id_prodotto, data_acquisto)
+VALUES (1, 1, '2023-01-01');
+
+-- Conferma la transazione
+COMMIT;
+
+-- Crea il trigger
+DELIMITER //
+CREATE TRIGGER after_acquisto_insert
+AFTER INSERT ON acquisti
+FOR EACH ROW
+BEGIN
+    -- Inserisci un nuovo record nella tabella lista_desideri
+    INSERT INTO lista_desideri (id_utente, id_prodotto)
+    VALUES (NEW.id_utente, NEW.id_prodotto);
+END;//
+DELIMITER ;
 
